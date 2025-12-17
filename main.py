@@ -135,13 +135,44 @@ async def actor_from_audit_log(guild: discord.Guild, action: AuditLogAction, tar
         log(f"Audit Log HTTP-Fehler: {e}")
     return None
 
+# ---------- Nachricht an Eigentümer nach Neustart ----------
+async def notify_owner_after_restart():
+    await asyncio.sleep(3)
+    message_text = (
+        "Iron Guard"
+        "@User*, lieber Eigentümer des Servers **(servername)*,\n"
+        "aufgrund dessen, dass mein Besitzer regelmäßig einen neuen Free-Plan bei einer Hosting-Website beantragen muss, "
+        "wurde ich neu gestartet.\n"
+        "Dabei werden leider die Nutzer in der Whitelist und Blacklist gelöscht.\n"
+        "Bitte stelle daher deine Whitelist und Blacklist erneut ein.\n\n"
+        "*Mit freundlichen Grüßen,*\n"
+        "Iron Guard"
+    )
+
+    for guild in bot.guilds:
+        try:
+            owner = guild.owner or await bot.fetch_user(guild.owner_id)
+            if owner:
+                try:
+                    await owner.send(message_text.replace("@User", owner.mention).replace("(servername)", guild.name))
+                    log(f"Neustart-Nachricht an {owner} per DM gesendet ({guild.name})")
+                except (Forbidden, HTTPException):
+                    channel = discord.utils.get(guild.text_channels, name="moderator-only")
+                    if channel:
+                        await channel.send(message_text.replace("@User", owner.mention).replace("(servername)", guild.name))
+                        log(f"Neustart-Nachricht an #{channel.name} in {guild.name} gesendet")
+                    else:
+                        log(f"Kein 'moderator-only'-Kanal in {guild.name} gefunden.")
+        except Exception as e:
+            log(f"Fehler beim Benachrichtigen des Eigentümers in {guild.name}: {e}")
+
 # ---------- Events ----------
 @bot.event
 async def on_ready():
     log(f"Bot online als {bot.user} (ID: {bot.user.id})")
     await bot.change_presence(
         status=discord.Status.online,
-        activity=discord.Game("Beschützt deinen Server")
+        activity=discord.Game("Beschützt deinen Server!")
     )
 
     asyncio.create_task(notify_owner_after_restart())
