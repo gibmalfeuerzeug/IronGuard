@@ -139,7 +139,7 @@ async def actor_from_audit_log(guild: discord.Guild, action: AuditLogAction, tar
 async def notify_owner_after_restart():
     await asyncio.sleep(3)
     message_text = (
-Bot wurde vom Service Neugestartet! Bitte Überprüfe deine White- und Blacklist.
+"Bot wurde vom Service Neugestartet! Bitte Überprüfe deine White- und Blacklist."
     )
 
     for guild in bot.guilds:
