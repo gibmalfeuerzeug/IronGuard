@@ -408,7 +408,7 @@ async def secure(ctx):
     embed = discord.Embed(
         title=" IronGuard",
         description="Dieser Server wird aktiv überwacht.",
-        color= 00001 
+        color= 0x0001 
     )
     embed.set_footer(text="IronGuard Security Bot")
     
