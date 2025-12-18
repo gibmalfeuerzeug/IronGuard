@@ -139,7 +139,7 @@ async def actor_from_audit_log(guild: discord.Guild, action: AuditLogAction, tar
 async def notify_owner_after_restart():
     await asyncio.sleep(3)
     message_text = (
-   "Der Bot Service hat den Bot Aktualisiert. Bitte Überprüfe deine eingestellte White- und Blacklist"
+   "``Der Bot Service hat den Bot Aktualisiert. Bitte Überprüfe deine eingestellte White- und Blacklist``"
     )
 
     for guild in bot.guilds:
@@ -165,7 +165,7 @@ async def on_ready():
     log(f"Bot online als {bot.user} (ID: {bot.user.id})")
     await bot.change_presence(
         status=discord.Status.online,
-        activity=discord.Game("Ist Auf deinem Server Aktiv")
+        activity=discord.Game("Iron Guard")
     )
 
     asyncio.create_task(notify_owner_after_restart())
@@ -287,8 +287,8 @@ async def on_member_join(member: discord.Member):
         except Exception:
             pass
         if inviter and not is_whitelisted(inviter):
-            await kick_member(member.guild, member, "Bot wurde von nicht-whitelisted User eingeladen")
-            await kick_member(member.guild, inviter, "Bot eingeladen ohne Whitelist-Berechtigung")
+            await kick_member(member.guild, member, "Bot wurde wegen nicht Whitlisted entfernt!")
+            await kick_member(member.guild, inviter, "Member wurde ohne Whitlist aus deinem Server gekickt!")
 
 # ---------- Anti Channel Delete ----------
 @bot.event
@@ -323,9 +323,9 @@ async def add_whitelist(interaction: discord.Interaction, user: discord.User):
 @bot.tree.command(name="removewhitelist", description="Entfernt einen User von der Whitelist (Owner/Admin Only)")
 async def remove_whitelist(interaction: discord.Interaction, user: discord.User):
     if not is_bot_admin(interaction):
-        return await interaction.response.send_message("❌ Keine Berechtigung.", ephemeral=True)
+        return await interaction.response.send_message("Keine Berechtigung.", ephemeral=True)
     whitelists[interaction.guild.id].discard(user.id)
-    await interaction.response.send_message(f"✅ User {user} wurde in *{interaction.guild.name}* von der Whitelist entfernt.", ephemeral=True)
+    await interaction.response.send_message(f" User {user} wurde in *{interaction.guild.name}* von der Whitelist entfernt.", ephemeral=True)
 
 @bot.tree.command(name="showwhitelist", description="Zeigt alle User in der Whitelist")
 async def show_whitelist(interaction: discord.Interaction):
@@ -367,13 +367,13 @@ async def show_blacklist(interaction: discord.Interaction):
             resolved.append(user.name if user else str(uid))
         except Exception:
             resolved.append(str(uid))
-    await interaction.response.send_message("🚫 Blacklist:\n" + "\n".join(resolved), ephemeral=True)
+    await interaction.response.send_message(" Blacklist:\n" + "\n".join(resolved), ephemeral=True)
 
 # ---------- Neuer Slash Command: Create Webhook ----------
 @bot.tree.command(name="create-webhook", description="Erstellt einen Webhook (Whitelist Only)")
 async def create_webhook(interaction: discord.Interaction, channel: discord.TextChannel, name: str):
     if not is_whitelisted(interaction.user):
-        return await interaction.response.send_message("❌ Du bist nicht whitelisted!", ephemeral=True)
+        return await interaction.response.send_message(" Du bist nicht in der Whitlist!", ephemeral=True)
 
     try:
         hook = await channel.create_webhook(name=name, reason=f"Erstellt von whitelisted User {interaction.user}")
@@ -405,9 +405,9 @@ async def help_command(interaction: discord.Interaction):
     embed.add_field(
         name="Whitelist Commands",
         value=(
-            "`/addwhitelist <user>` – User zur Whitelist hinzufügen\n"
-            "`/removewhitelist <user>` – User von der Whitelist entfernen\n"
-            "`/showwhitelist` – Whitelist anzeigen"
+            "`/addwhitelist <user>` – fügt den user zur Whitelist hinzu"
+            "`/removewhitelist <user>` –Entfernt den user von der Whitelist"
+            "`/showwhitelist` – Zeigt die Whitelist an"
         ),
         inline=False
     )
@@ -429,7 +429,7 @@ async def help_command(interaction: discord.Interaction):
     )
 
     embed.add_field(
-        name="🛡️ Automatische Schutzsysteme",
+        name="Automatische Schutzsysteme",
         value=(
             "• Anti-Invite-Spam\n"
             "• Anti-Mention-Spam\n"
@@ -442,7 +442,7 @@ async def help_command(interaction: discord.Interaction):
         inline=False
     )
 
-    embed.set_footer(text="Iron Guard • Railway Ready")
+    embed.set_footer(text="Iron Guard • Icon Guard Service")
 
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
