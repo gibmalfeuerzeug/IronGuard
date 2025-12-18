@@ -165,14 +165,14 @@ async def on_ready():
     log(f"Bot online als {bot.user} (ID: {bot.user.id})")
     await bot.change_presence(
         status=discord.Status.online,
-        activity=discord.Game("Iron Guard")
+        activity=discord.Game("Spielt mit Iron Guard")
     )
 
     asyncio.create_task(notify_owner_after_restart())
 
     try:
         await bot.tree.sync()
-        log("Alle Slash Commands global synchronisiert ✅")
+        log("Alle Slash Commands global synchronisiert ")
     except Exception as e:
         log(f"Fehler beim globalen Slash Command Sync: {e}")
 
@@ -316,9 +316,9 @@ async def on_guild_channel_create(channel):
 @bot.tree.command(name="addwhitelist", description="Fügt einen User zur Whitelist hinzu (Owner/Admin Only)")
 async def add_whitelist(interaction: discord.Interaction, user: discord.User):
     if not is_bot_admin(interaction):
-        return await interaction.response.send_message("❌ Keine Berechtigung.", ephemeral=True)
+        return await interaction.response.send_message(" Keine Berechtigung.", ephemeral=True)
     whitelists[interaction.guild.id].add(user.id)
-    await interaction.response.send_message(f"✅ User {user} wurde in *{interaction.guild.name}* zur Whitelist hinzugefügt.", ephemeral=True)
+    await interaction.response.send_message(f" User {user} wurde in *{interaction.guild.name}* zur Whitelist hinzugefügt.", ephemeral=True)
 
 @bot.tree.command(name="removewhitelist", description="Entfernt einen User von der Whitelist (Owner/Admin Only)")
 async def remove_whitelist(interaction: discord.Interaction, user: discord.User):
@@ -339,21 +339,21 @@ async def show_whitelist(interaction: discord.Interaction):
             resolved.append(user.name if user else str(uid))
         except Exception:
             resolved.append(str(uid))
-    await interaction.response.send_message("📜 Whitelist:\n" + "\n".join(resolved), ephemeral=True)
+    await interaction.response.send_message("Whitelist:\n" + "\n".join(resolved), ephemeral=True)
 
 @bot.tree.command(name="addblacklist", description="Fügt einen User zur Blacklist hinzu (Owner/Admin Only)")
 async def add_blacklist(interaction: discord.Interaction, user: discord.User):
     if not is_bot_admin(interaction):
-        return await interaction.response.send_message("❌ Keine Berechtigung.", ephemeral=True)
+        return await interaction.response.send_message("Keine Berechtigung.", ephemeral=True)
     blacklists[interaction.guild.id].add(user.id)
-    await interaction.response.send_message(f"✅ User {user} wurde in *{interaction.guild.name}* zur Blacklist hinzugefügt.", ephemeral=True)
+    await interaction.response.send_message(f" User {user} wurde in *{interaction.guild.name}* zur Blacklist hinzugefügt.", ephemeral=True)
 
 @bot.tree.command(name="removeblacklist", description="Entfernt einen User von der Blacklist (Owner/Admin Only)")
 async def remove_blacklist(interaction: discord.Interaction, user: discord.User):
     if not is_bot_admin(interaction):
-        return await interaction.response.send_message("❌ Keine Berechtigung.", ephemeral=True)
+        return await interaction.response.send_message("Keine Berechtigung.", ephemeral=True)
     blacklists[interaction.guild.id].discard(user.id)
-    await interaction.response.send_message(f"✅ User {user} wurde in *{interaction.guild.name}* von der Blacklist entfernt.", ephemeral=True)
+    await interaction.response.send_message(f"User {user} wurde in *{interaction.guild.name}* von der Blacklist entfernt.", ephemeral=True)
 
 @bot.tree.command(name="showblacklist", description="Zeigt alle User in der Blacklist")
 async def show_blacklist(interaction: discord.Interaction):
