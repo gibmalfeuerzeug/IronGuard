@@ -139,14 +139,7 @@ async def actor_from_audit_log(guild: discord.Guild, action: AuditLogAction, tar
 async def notify_owner_after_restart():
     await asyncio.sleep(3)
     message_text = (
-        "Iron Guard"
-        "@User*, lieber Eigentümer des Servers **(servername)*,\n"
-        "aufgrund dessen, dass mein Besitzer regelmäßig einen neuen Free-Plan bei einer Hosting-Website beantragen muss, "
-        "wurde ich neu gestartet.\n"
-        "Dabei werden leider die Nutzer in der Whitelist und Blacklist gelöscht.\n"
-        "Bitte stelle daher deine Whitelist und Blacklist erneut ein.\n\n"
-        "*Mit freundlichen Grüßen,*\n"
-        "Iron Guard"
+Bot wurde vom Service Neugestartet! Bitte Überprüfe deine White- und Blacklist.
     )
 
     for guild in bot.guilds:
@@ -172,7 +165,7 @@ async def on_ready():
     log(f"Bot online als {bot.user} (ID: {bot.user.id})")
     await bot.change_presence(
         status=discord.Status.online,
-        activity=discord.Game("Beschützt deinen Server!")
+        activity=discord.Game("Spielt auf deinem Server")
     )
 
     asyncio.create_task(notify_owner_after_restart())
@@ -294,8 +287,8 @@ async def on_member_join(member: discord.Member):
         except Exception:
             pass
         if inviter and not is_whitelisted(inviter):
-            await kick_member(member.guild, member, "Bot wurde von nicht-whitelisted User eingeladen")
-            await kick_member(member.guild, inviter, "Bot eingeladen ohne Whitelist-Berechtigung")
+            await kick_member(member.guild, member, "Der Member wurde gekickt wegen unerlaubten Einladen eines nicht verifizierten Bots")
+            await kick_member(member.guild, inviter, "Bot wurde gekickt wegen ungenügenden Berechtigungen")
 
 # ---------- Anti Channel Delete ----------
 @bot.event
@@ -399,6 +392,27 @@ async def create_webhook(interaction: discord.Interaction, channel: discord.Text
         await interaction.response.send_message(f"✅ Webhook erstellt: {hook.url}", ephemeral=True)
     except Exception as e:
         await interaction.response.send_message(f"❌ Fehler beim Erstellen des Webhooks: {e}", ephemeral=True)
+
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f"✅ Eingeloggt als {bot.user}")
+
+@bot.command()
+async def secure(ctx):
+    embed = discord.Embed(
+        title=" IronGuard",
+        description="Dieser Server wird aktiv überwacht.",
+        color= 00001 
+    )
+    embed.set_footer(text="IronGuard Security Bot")
+    
+    await ctx.send(embed=embed)
 
 # ---------- Start ----------
 if __name__ == "__main__":
