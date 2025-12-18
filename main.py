@@ -139,7 +139,7 @@ async def actor_from_audit_log(guild: discord.Guild, action: AuditLogAction, tar
 async def notify_owner_after_restart():
     await asyncio.sleep(3)
     message_text = (
-"Bot wurde vom Service Neugestartet! Bitte Überprüfe deine White- und Blacklist."
+   "Der Bot Service hat den Bot Aktualisiert. Bitte Überprüfe deine eingestellte White- und Blacklist"
     )
 
     for guild in bot.guilds:
@@ -165,7 +165,7 @@ async def on_ready():
     log(f"Bot online als {bot.user} (ID: {bot.user.id})")
     await bot.change_presence(
         status=discord.Status.online,
-        activity=discord.Game("Spielt auf deinem Server")
+        activity=discord.Game("Ist Auf deinem Server Aktiv")
     )
 
     asyncio.create_task(notify_owner_after_restart())
@@ -287,8 +287,8 @@ async def on_member_join(member: discord.Member):
         except Exception:
             pass
         if inviter and not is_whitelisted(inviter):
-            await kick_member(member.guild, member, "Der Member wurde gekickt wegen unerlaubten Einladen eines nicht verifizierten Bots")
-            await kick_member(member.guild, inviter, "Bot wurde gekickt wegen ungenügenden Berechtigungen")
+            await kick_member(member.guild, member, "Bot wurde von nicht-whitelisted User eingeladen")
+            await kick_member(member.guild, inviter, "Bot eingeladen ohne Whitelist-Berechtigung")
 
 # ---------- Anti Channel Delete ----------
 @bot.event
@@ -389,30 +389,62 @@ async def create_webhook(interaction: discord.Interaction, channel: discord.Text
 
         asyncio.create_task(delete_later())
 
-        await interaction.response.send_message(f"✅ Webhook erstellt: {hook.url}", ephemeral=True)
+        await interaction.response.send_message(f" Webhook erstellt: {hook.url}", ephemeral=True)
     except Exception as e:
-        await interaction.response.send_message(f"❌ Fehler beim Erstellen des Webhooks: {e}", ephemeral=True)
+        await interaction.response.send_message(f" Fehler beim Erstellen des Webhooks: {e}", ephemeral=True)
 
-
-intents = discord.Intents.default()
-intents.message_content = True
-
-bot = commands.Bot(command_prefix="!", intents=intents)
-
-@bot.event
-async def on_ready():
-    print(f"✅ Eingeloggt als {bot.user}")
-
-@bot.command()
-async def secure(ctx):
+# ---------- Slash Command: Help ----------
+@bot.tree.command(name="help", description="Zeigt alle verfügbaren Bot-Befehle")
+async def help_command(interaction: discord.Interaction):
     embed = discord.Embed(
-        title=" IronGuard",
-        description="Dieser Server wird aktiv überwacht.",
-        color= 0x0001 
+        title="🛡️Iron Guard – Hilfe",
+        description="Hier findest du alle verfügbaren Befehle und Funktionen dieses Bots.",
+        color=discord.Color.from_rgb(0, 0, 0)  # Schwarz
     )
-    embed.set_footer(text="IronGuard Security Bot")
-    
-    await ctx.send(embed=embed)
+
+    embed.add_field(
+        name="Whitelist Commands",
+        value=(
+            "`/addwhitelist <user>` – User zur Whitelist hinzufügen\n"
+            "`/removewhitelist <user>` – User von der Whitelist entfernen\n"
+            "`/showwhitelist` – Whitelist anzeigen"
+        ),
+        inline=False
+    )
+
+    embed.add_field(
+        name="Blacklist Commands",
+        value=(
+            "`/addblacklist <user>` – User zur Blacklist hinzufügen\n"
+            "`/removeblacklist <user>` – User von der Blacklist entfernen\n"
+            "`/showblacklist` – Blacklist anzeigen"
+        ),
+        inline=False
+    )
+
+    embed.add_field(
+        name="Webhook",
+        value="`/create-webhook <channel> <name>` – Erstellt einen Webhook (nur Whitelist)",
+        inline=False
+    )
+
+    embed.add_field(
+        name="🛡️ Automatische Schutzsysteme",
+        value=(
+            "• Anti-Invite-Spam\n"
+            "• Anti-Mention-Spam\n"
+            "• Anti-Webhook-Spam\n"
+            "• Anti-Ban/Kick-Spam\n"
+            "• Anti-Bot-Invite\n"
+            "• Anti-Channel / Role Delete\n"
+            "• Anti-Channel Create"
+        ),
+        inline=False
+    )
+
+    embed.set_footer(text="Iron Guard • Railway Ready")
+
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 # ---------- Start ----------
 if __name__ == "__main__":
